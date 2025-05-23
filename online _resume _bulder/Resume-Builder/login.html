@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | Resume Builder</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #2980b9, #6dd5fa);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 320px;
+        }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            font-size: 26px;
+            color: #2c3e50;
+        }
+
+        .login-container input[type="email"],
+        .login-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            border: none;
+            color: white;
+            font-weight: bold;
+            margin-top: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-container button:hover {
+            background: #2980b9;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: #3498db;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .small-text {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+    <h2 id="form-title">Login</h2>
+    <form id="login-form">
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button type="submit" id="submit-btn">Login</button>
+        <button type="button" class="toggle-btn" id="toggle-form">Don't have an account? Register</button>
+        <p class="small-text" id="message"></p>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('login-form');
+    const toggleForm = document.getElementById('toggle-form');
+    const formTitle = document.getElementById('form-title');
+    const submitBtn = document.getElementById('submit-btn');
+    const message = document.getElementById('message');
+
+    let isLogin = true; // current mode
+
+    // Toggle between login and register
+    toggleForm.addEventListener('click', () => {
+        isLogin = !isLogin;
+        formTitle.innerText = isLogin ? 'Login' : 'Register';
+        submitBtn.innerText = isLogin ? 'Login' : 'Register';
+        toggleForm.innerText = isLogin ? "Don't have an account? Register" : "Already have an account? Login";
+        message.innerText = '';
+    });
+
+    // Handle login or register
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if (!email || !password) {
+            message.innerText = 'Please fill all fields.';
+            return;
+        }
+
+        if (isLogin) {
+            // LOGIN
+            const storedUser = JSON.parse(localStorage.getItem(email));
+            if (storedUser && storedUser.password === password) {
+    message.style.color = 'green';
+    message.innerText = 'Login successful! Redirecting...';
+    localStorage.setItem('loggedIn', 'true');
+    localStorage.setItem('currentUser', email);
+    setTimeout(() => {
+        window.location.href = 'index.html'; // redirect to homepage
+    }, 1500);
+
+
+            } else {
+                message.style.color = 'red';
+                message.innerText = 'Invalid email or password.';
+            }
+        } else {
+            // REGISTER
+            if (localStorage.getItem(email)) {
+                message.style.color = 'red';
+                message.innerText = 'User already exists!';
+            } else {
+                localStorage.setItem(email, JSON.stringify({ email, password }));
+                message.style.color = 'green';
+                message.innerText = 'Registration successful! You can now login.';
+                isLogin = true;
+                formTitle.innerText = 'Login';
+                submitBtn.innerText = 'Login';
+                toggleForm.innerText = "Don't have an account? Register";
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
